@@ -1,6 +1,6 @@
-import type { JestConfigWithTsJest } from 'ts-jest'
+import type { JestConfigWithTsJest } from "ts-jest";
 
-const jestConfig: JestConfigWithTsJest =  {
+const jestConfig: JestConfigWithTsJest = {
   clearMocks: true,
   collectCoverage: true,
   coverageProvider: "v8",
@@ -13,7 +13,7 @@ const jestConfig: JestConfigWithTsJest =  {
       "ts-jest",
       {
         useESM: true,
-      }
+      },
     ],
     "^.+\\.tsx?$": [
       "ts-jest",
