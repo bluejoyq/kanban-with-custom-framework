@@ -9,31 +9,40 @@
  * @property {Date | string} updatedAt 최근 업데이트된 날짜
  */
 export class IssueModel {
-  /**
-   * @param {Object} params
-   * @param {string} params.title
-   * @param {string} params.status
-   * @param {string} params.authorId
-   * @param {string} params.id
-   * @param {Date | string} params.createdAt
-   * @param {Date | string} params.updatedAt
-   */
-  constructor(params) {
+  title: string;
+  authorId: string;
+  id: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  constructor(params: {
+    title: string;
+    status: string;
+    authorId: string;
+    id: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+  }) {
     this.title = params.title;
     this.authorId = params.authorId;
     this.id = params.id;
     this.status = params.status;
+    
     if (params.createdAt instanceof Date) {
       this.createdAt = params.createdAt;
+    } else if (typeof params.createdAt === "string") {
+      this.createdAt = new Date(params.createdAt);
+    } else {
+      throw new Error("Invalid createdAt type");
     }
-    if (typeof params.updatedAt === "string") {
-      this.updatedAt = new Date(params.updatedAt);
-    }
+
     if (params.updatedAt instanceof Date) {
       this.updatedAt = params.updatedAt;
-    }
-    if (typeof params.createdAt === "string") {
-      this.createdAt = new Date(params.createdAt);
+    } else if (typeof params.updatedAt === "string") {
+      this.updatedAt = new Date(params.updatedAt);
+    } else {
+      throw new Error("Invalid updatedAt type");
     }
   }
 }
