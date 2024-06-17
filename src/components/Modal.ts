@@ -5,25 +5,23 @@ import { Div } from "../lib/Element";
  * @return {function():HTMLElement}
  */
 export const Modal = () => {
-  /**
-   * @param {Object} param
-   * @param {Array<HTMLElement>} param.children
-   * @param {function():void} param.onClose
-   * @return {HTMLElement}
-   */
-  return ({ children, onClose }) => {
+  return ({
+    children,
+    onClose,
+  }: {
+    children: HTMLElement[];
+    onClose: () => void;
+  }) => {
     return Div({
       children: [
         Div({
           children: [...children],
           class: "modal-container",
-          onclick: (e) => {
-            e.stopPropagation();
-          },
+          onClick: (e) => e.stopPropagation(),
         }),
       ],
       class: "modal-layout",
-      onclick: onClose,
+      onClick: onClose,
     });
   };
 };
