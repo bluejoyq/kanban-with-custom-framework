@@ -1,27 +1,27 @@
+import { KanbanStatus } from "../App";
 import { Div, Button, H2, Span } from "../lib/Element";
 import { debounce } from "../lib/utils";
 import { IssueModel } from "../models/Issue";
 
 /**
  * @description 칸반 보드의 한 열을 생성하는 함수
- * @param {string} title
- * @param {function():Array<IssueModel>} getKanbanIssues
- * @param {function(IssueModel, string, string,number):void} handleMoveIssue
- * @param {function(IssueModel):void} handleDeleteIssue
- * @param {function(IssueModel):void} setEditingIssue
- * @param {function(string):void} setWritingStatus
  * @return {function():HTMLElement}
  */
 export const KanbanCol = (
-  title,
-  getKanbanIssues,
-  handleMoveIssue,
-  handleDeleteIssue,
-  setEditingIssue,
-  setWritingStatus,
-) => {
-  let targetIdx = null;
-  const setTargetIndex = (idx) => {
+  status: KanbanStatus,
+  getKanbanIssues: () => Array<IssueModel>,
+  handleMoveIssue: (
+    issue: IssueModel,
+    from: KanbanStatus,
+    to: KanbanStatus,
+    targetIdx: number,
+  ) => void,
+  handleDeleteIssue: (issue: IssueModel) => void,
+  setEditingIssue: (issue: IssueModel) => void,
+  setWritingStatus: (status: KanbanStatus) => void,
+): (() => HTMLElement) => {
+  let targetIdx: number | null = null;
+  const setTargetIndex = (idx: number | null) => {
     targetIdx = idx;
   };
   /**
@@ -35,16 +35,15 @@ export const KanbanCol = (
     });
 
     /**
-     * @param {DragEvent} e
      * @return {void}
      */
-    const debouncedHandleDragOver = debounce((e) => {
-      const $zone = document.querySelector(`#${title}`);
+    const debouncedHandleDragOver = debounce((e: DragEvent) => {
+      const $zone = document.querySelector(`#${status}`);
       const $dragging = document.querySelector(".is-dragging");
       if ($zone == null || $dragging == null) {
         return;
       }
-      $dragging.parentElement.removeChild($dragging);
+      $dragging.parentElement?.removeChild($dragging);
       const $afterElement = getDragAfterElement($zone, e.clientY);
       // 명시적 리렌더링을 위해 key를 추가함.
       $dragging.setAttribute("key", new Date().getTime().toString());
@@ -58,21 +57,16 @@ export const KanbanCol = (
     }, 10);
 
     /**
-     * @param {issue} data
-     * @return {void}
      * @description 이슈를 이동시키는 함수
      */
-    const debouncedHandleDrop = debounce((data) => {
-      handleMoveIssue(data, data.status, title, targetIdx);
+    const debouncedHandleDrop = debounce((issue: IssueModel) => {
+      handleMoveIssue(issue, issue.status, status, targetIdx ?? -1);
       setTargetIndex(null);
     }, 10);
     /**
-     * @param {HTMLElement} $container
-     * @param {number} y
-     * @return {HTMLElement?}
      * @reference https://codepen.io/joshuacerbito/pen/MWbZEPx
      */
-    const getDragAfterElement = ($container, y) => {
+    const getDragAfterElement = ($container: Element, y: number) => {
       const queryResult = $container.querySelectorAll(".kanban-item");
       if (queryResult.length === 0) return null;
       const $draggableElements = [...queryResult];
@@ -99,13 +93,13 @@ export const KanbanCol = (
         Div({
           children: [
             H2({
-              children: [title],
+              children: [status],
               class: "kanban-col-title",
             }),
             Button({
               children: ["추가"],
-              onclick: () => {
-                setWritingStatus(title);
+              onClick: () => {
+                setWritingStatus(status);
               },
             }),
           ],
@@ -123,23 +117,24 @@ export const KanbanCol = (
             }),
           ],
           class: "kanban-items-container",
-          id: title,
+          id: status,
         }),
       ],
       class: "kanban-col",
-      ondragenter: (e) => {
+      onDragEnter: (e) => {
         e.preventDefault();
       },
-      ondrop: (e) => {
+      onDrop: (e) => {
         e.preventDefault();
-        const data = e.dataTransfer.getData("text/plain");
+        const data = e.dataTransfer?.getData("text/plain");
+        if (data == null) return;
         const issue = new IssueModel(JSON.parse(data));
         debouncedHandleDrop(issue);
       },
-      ondragleave: (e) => {
+      onDragLeave: (e) => {
         e.preventDefault();
       },
-      ondragover: (e) => {
+      onDragOver: (e) => {
         e.preventDefault();
         debouncedHandleDragOver(e);
       },
@@ -153,7 +148,11 @@ export const KanbanCol = (
  * @param {function(IssueModel):void} setEditingIssue
  * @return {function():HTMLElement}
  */
-const KanbanItem = (issue, handleDeleteIssue, setEditingIssue) => {
+const KanbanItem = (
+  issue: IssueModel,
+  handleDeleteIssue: (issue: IssueModel) => void,
+  setEditingIssue: (issue: IssueModel) => void,
+) => {
   const handleRemove = () => {
     if (!confirm("삭제하시겠습니까?")) return;
     handleDeleteIssue(issue);
@@ -174,11 +173,11 @@ const KanbanItem = (issue, handleDeleteIssue, setEditingIssue) => {
             }),
             Button({
               children: ["수정"],
-              onclick: handleEdit,
+              onClick: handleEdit,
             }),
             Button({
               children: ["삭제"],
-              onclick: handleRemove,
+              onClick: handleRemove,
             }),
           ],
           class: "kanban-item-header",
@@ -208,12 +207,14 @@ const KanbanItem = (issue, handleDeleteIssue, setEditingIssue) => {
       ],
       draggable: true,
       class: "kanban-item",
-      ondragstart: (e) => {
-        e.target.classList.add("is-dragging");
-        e.dataTransfer.setData("text/plain", JSON.stringify(issue));
+      onDragStart: (e) => {
+        const target = e.target as HTMLElement;
+        target.classList.add("is-dragging");
+        e.dataTransfer?.setData("text/plain", JSON.stringify(issue));
       },
-      ondragend: (e) => {
-        e.target.classList.remove("is-dragging");
+      onDragEnd: (e) => {
+        const target = e.target as HTMLElement;
+        target.classList.remove("is-dragging");
         e.preventDefault();
       },
     });

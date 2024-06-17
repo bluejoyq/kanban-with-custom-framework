@@ -4,7 +4,7 @@ type ElementProps<T extends HTMLElement = HTMLElement> = Partial<
   Omit<T, keyof GlobalEventHandlers | "children">
 > & {
   tagName: string;
-  children?: Array<string | number | HTMLElement>;
+  children?: Array<string | number | HTMLElement | boolean>;
   class?: string;
   key?: string | number;
   [k: `data-${string}`]: string;

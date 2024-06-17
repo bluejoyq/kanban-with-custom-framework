@@ -4,7 +4,8 @@ import { Modal } from "./components/Modal";
 import { IssueForm } from "./components/IssueForm";
 import { KanbanCol } from "./components/Kanban";
 import { useKanban } from "./hooks/useKanban";
-
+import { IssueModel } from "./models/Issue";
+export type KanbanStatus = "to-do" | "doing" | "done";
 /**
  * @return {function():HTMLElement}
  * @description 어플리케이션 진입점
@@ -13,16 +14,18 @@ import { useKanban } from "./hooks/useKanban";
  * 네이티브 엘리먼트를 생성하는 함수가 실행되는 시점은 렌더로 가정.
  */
 export const App = () => {
+  const kanbanStatus: KanbanStatus[] = ["to-do", "doing", "done"];
   const {
-    kanbanTitles,
     getKanbanDatas,
     handleMoveIssue,
     handleWriteIssue,
     handleEditIssue,
     handleDeleteIssue,
   } = useKanban();
-  const [getEditingIssue, setEditingIssue] = useState(null);
-  const [getWritingStatus, setWritingStatus] = useState(null);
+  const [getEditingIssue, setEditingIssue] = useState<IssueModel | null>(null);
+  const [getWritingStatus, setWritingStatus] = useState<KanbanStatus | null>(
+    null,
+  );
 
   const handleWritingModalClose = () => {
     setWritingStatus(null);
@@ -32,10 +35,10 @@ export const App = () => {
     setEditingIssue(null);
   };
 
-  const KanbanColComponents = kanbanTitles.map((title) => {
-    const getKanbanIssues = () => getKanbanDatas()[title];
+  const KanbanColComponents = kanbanStatus.map((status) => {
+    const getKanbanIssues = () => getKanbanDatas().get(status) ?? [];
     return KanbanCol(
-      title,
+      status,
       getKanbanIssues,
       handleMoveIssue,
       handleDeleteIssue,
@@ -46,7 +49,15 @@ export const App = () => {
   const ModalComponent = Modal();
   const IssueFormComponent = IssueForm();
   return () => {
-    const writingIssue = getWritingStatus();
+    const writingStatus = getWritingStatus();
+    const writingIssue = new IssueModel({
+      id: performance.now().toString(),
+      title: "",
+      authorId: "",
+      status: writingStatus ?? "to-do",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     const editingIssue = getEditingIssue();
     return Div({
       children: [
@@ -61,13 +72,13 @@ export const App = () => {
           ],
           class: "kanban",
         }),
-        writingIssue != null &&
+        writingStatus != null &&
           ModalComponent({
             children: [
               IssueFormComponent({
                 issue: writingIssue,
                 onSubmit: (title, authorId) => {
-                  handleWriteIssue(title, authorId, writingIssue);
+                  handleWriteIssue(title, authorId, writingStatus);
                 },
                 onClose: handleWritingModalClose,
               }),

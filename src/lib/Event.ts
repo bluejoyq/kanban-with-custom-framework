@@ -18,6 +18,13 @@ type EventNameMap = {
   onScroll: "scroll";
   onWheel: "wheel";
   onContextMenu: "contextmenu";
+  onDragStart: "dragstart";
+  onDragEnd: "dragend";
+  onDragOver: "dragover";
+  onDragEnter: "dragenter";
+  onDragLeave: "dragleave";
+  onDrop: "drop";
+  onDrag: "drag";
 };
 
 export type EventTypeMap = {
@@ -48,6 +55,13 @@ export const isEventHandlerName = (
     "onScroll",
     "onWheel",
     "onContextMenu",
+    "onDragStart",
+    "onDragEnd",
+    "onDragOver",
+    "onDragEnter",
+    "onDragLeave",
+    "onDrop",
+    "onDrag",
   ];
   return eventHandlerNames.includes(name as keyof EventNameMap);
 };

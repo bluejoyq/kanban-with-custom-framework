@@ -11,7 +11,7 @@ interface UseKanbanProps {
  * @description 칸반 보드를 사용하는 커스텀 훅
  */
 export const useKanban = <
-  KanbanStatus extends string = "to-do" | "in-progress" | "done",
+  KanbanStatus extends string = "to-do" | "doing" | "done",
 >(
   {
     storage = localStorage,
@@ -35,26 +35,15 @@ export const useKanban = <
       return new Map();
     }
     const parsedKanbanDatas = JSON.parse(kanbanDatas);
-    const newKanban = new Map();
-    Object.keys(parsedKanbanDatas).forEach((key) => {
-      newKanban.set(
-        key,
-        parsedKanbanDatas[key].map(
-          (i: IssueModel<KanbanStatus>) =>
-            new IssueModel({
-              ...i,
-            }),
-        ),
-      );
-    });
+    const newKanban = new Map(parsedKanbanDatas) as KanbanMap;
     return newKanban;
   };
 
   /**
    * @description 칸반 데이터를 저장하는 함수
    */
-  const _saveKanbanToStorage = () => {
-    storage.setItem(storageKey, JSON.stringify(getKanban()));
+  const _saveKanbanToStorage = (newKanban: KanbanMap) => {
+    storage.setItem(storageKey, JSON.stringify([...newKanban]));
   };
   /**
    * @description 칸반 데이터를 초기화하는 함수
@@ -70,7 +59,7 @@ export const useKanban = <
    */
   const _updateKanban = (newKanban: KanbanMap) => {
     setKanban(newKanban);
-    _saveKanbanToStorage();
+    _saveKanbanToStorage(newKanban);
   };
   /**
    * @description 이슈를 이동시키는 함수

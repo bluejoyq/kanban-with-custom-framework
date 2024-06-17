@@ -18,7 +18,14 @@ export class IssueModel<
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(params: {
+  constructor({
+    title,
+    status,
+    authorId,
+    id,
+    createdAt,
+    updatedAt,
+  }: {
     title: string;
     status: KanbanStatus;
     authorId: string;
@@ -26,23 +33,22 @@ export class IssueModel<
     createdAt: Date | string;
     updatedAt: Date | string;
   }) {
-    this.title = params.title;
-    this.authorId = params.authorId;
-    this.id = params.id;
-    this.status = params.status;
-
-    if (params.createdAt instanceof Date) {
-      this.createdAt = params.createdAt;
-    } else if (typeof params.createdAt === "string") {
-      this.createdAt = new Date(params.createdAt);
+    this.title = title;
+    this.authorId = authorId;
+    this.id = id;
+    this.status = status;
+    if (createdAt instanceof Date) {
+      this.createdAt = createdAt;
+    } else if (typeof createdAt === "string") {
+      this.createdAt = new Date(createdAt);
     } else {
       throw new Error("Invalid createdAt type");
     }
 
-    if (params.updatedAt instanceof Date) {
-      this.updatedAt = params.updatedAt;
-    } else if (typeof params.updatedAt === "string") {
-      this.updatedAt = new Date(params.updatedAt);
+    if (updatedAt instanceof Date) {
+      this.updatedAt = updatedAt;
+    } else if (typeof updatedAt === "string") {
+      this.updatedAt = new Date(updatedAt);
     } else {
       throw new Error("Invalid updatedAt type");
     }
