@@ -102,7 +102,6 @@ export const useKanban = <
     } else {
       toIssues.splice(targetIdx, 0, issue);
     }
-    console.log(targetIdx, issue, toIssues);
 
     newKanban.set(to, toIssues);
     _updateKanban(newKanban);
