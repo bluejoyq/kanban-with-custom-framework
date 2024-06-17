@@ -125,6 +125,7 @@ const SPA = () => {
   const _render = debounceFrame(() => {
     const $virtualDom = root?.() ?? null;
     const $dom = $target?.firstChild ?? null;
+
     if ($dom == null && $virtualDom != null) {
       $target?.appendChild($virtualDom);
       return;

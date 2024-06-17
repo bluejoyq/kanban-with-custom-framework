@@ -1,12 +1,13 @@
 import { EventTypeMap, isEventHandlerName } from "./Event";
 
 type ElementProps<T extends HTMLElement = HTMLElement> = Partial<
-  Omit<T, "children">
+  Omit<T, keyof GlobalEventHandlers | "children">
 > & {
   tagName: string;
   children?: Array<string | number | HTMLElement>;
   class?: string;
   key?: string | number;
+  [k: `data-${string}`]: string;
 } & Partial<EventTypeMap>;
 type TagProps<T extends HTMLElement> = Omit<ElementProps<T>, "tagName">;
 
@@ -32,9 +33,13 @@ const Element = <T extends HTMLElement = HTMLElement>({
   });
   Object.keys(props).forEach((key) => {
     if (isEventHandlerName(key)) {
-      $el.addEventListener(key.substring(2).toLowerCase(), props[key]);
+      $el.addEventListener(
+        key.substring(2).toLowerCase() as keyof HTMLElementEventMap,
+        props[key] as EventListenerOrEventListenerObject,
+      );
       return;
     }
+    // @ts-ignore
     $el.setAttribute(key, props[key]);
   });
   return $el as T;
