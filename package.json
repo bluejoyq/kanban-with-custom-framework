@@ -13,6 +13,8 @@
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     "eslint": "^8.55.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^9.1.0",
