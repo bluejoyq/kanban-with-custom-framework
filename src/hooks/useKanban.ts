@@ -2,15 +2,17 @@ import { useState } from "../lib";
 import { IssueModel } from "../models/Issue";
 
 interface UseKanbanProps {
+  kanbanTitles?: readonly string[];
   storage?: Storage;
   storageKey?: string;
 }
 
-type KanbanMap = Map<string, IssueModel[]>;
 /**
  * @description 칸반 보드를 사용하는 커스텀 훅
  */
-export const useKanban = (
+export const useKanban = <
+  KanbanStatus extends string = "to-do" | "in-progress" | "done",
+>(
   {
     storage = localStorage,
     storageKey = "kanban",
@@ -19,7 +21,7 @@ export const useKanban = (
     storageKey: "kanban",
   },
 ) => {
-  const kanbanTitles = ["to-do", "in-progress", "done"];
+  type KanbanMap = Map<KanbanStatus, IssueModel<KanbanStatus>[]>;
   const initialKanban = new Map();
   const [getKanban, setKanban] = useState<KanbanMap>(initialKanban);
 
@@ -38,7 +40,7 @@ export const useKanban = (
       newKanban.set(
         key,
         parsedKanbanDatas[key].map(
-          (i: IssueModel) =>
+          (i: IssueModel<KanbanStatus>) =>
             new IssueModel({
               ...i,
             }),
@@ -74,9 +76,9 @@ export const useKanban = (
    * @description 이슈를 이동시키는 함수
    */
   const handleMoveIssue = (
-    issue: IssueModel,
-    from: string,
-    to: string,
+    issue: IssueModel<KanbanStatus>,
+    from: KanbanStatus,
+    to: KanbanStatus,
     idx: number | undefined,
   ) => {
     const targetIdx = idx ?? -1;
@@ -111,7 +113,7 @@ export const useKanban = (
   const handleWriteIssue = (
     title: string,
     authorId: string,
-    writingIssueStatus: string,
+    writingIssueStatus: KanbanStatus,
   ) => {
     const kanban = getKanban();
     const newKanban = new Map(kanban);
@@ -137,7 +139,7 @@ export const useKanban = (
    * @description 이슈를 수정하는 함수
    */
   const handleEditIssue = (
-    issue: IssueModel,
+    issue: IssueModel<KanbanStatus>,
     title: string,
     authorId: string,
   ) => {
@@ -161,7 +163,7 @@ export const useKanban = (
   /**
    * @description 이슈를 삭제하는 함수
    */
-  const handleDeleteIssue = (issue: IssueModel) => {
+  const handleDeleteIssue = (issue: IssueModel<KanbanStatus>) => {
     const kanban = getKanban();
     const newKanban = new Map(kanban);
     const targetIssues = newKanban.get(issue.status) ?? [];
@@ -181,6 +183,5 @@ export const useKanban = (
     handleWriteIssue,
     handleDeleteIssue,
     handleEditIssue,
-    kanbanTitles,
   };
 };

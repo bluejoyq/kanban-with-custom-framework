@@ -8,17 +8,17 @@
  * @property {Date | string} createdAt 생성된 날짜
  * @property {Date | string} updatedAt 최근 업데이트된 날짜
  */
-export class IssueModel {
+export class IssueModel<KanbanStatus extends string> {
   title: string;
   authorId: string;
   id: string;
-  status: string;
+  status: KanbanStatus;
   createdAt: Date;
   updatedAt: Date;
 
   constructor(params: {
     title: string;
-    status: string;
+    status: KanbanStatus;
     authorId: string;
     id: string;
     createdAt: Date | string;
@@ -28,7 +28,7 @@ export class IssueModel {
     this.authorId = params.authorId;
     this.id = params.id;
     this.status = params.status;
-    
+
     if (params.createdAt instanceof Date) {
       this.createdAt = params.createdAt;
     } else if (typeof params.createdAt === "string") {
