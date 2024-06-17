@@ -15,8 +15,4 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  rules: {
-    "new-cap": "off",
-    "no-undef": "error",
-  },
 };

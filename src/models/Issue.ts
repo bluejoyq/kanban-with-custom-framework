@@ -8,7 +8,9 @@
  * @property {Date | string} createdAt 생성된 날짜
  * @property {Date | string} updatedAt 최근 업데이트된 날짜
  */
-export class IssueModel<KanbanStatus extends string> {
+export class IssueModel<
+  KanbanStatus extends string = "to-do" | "doing" | "done",
+> {
   title: string;
   authorId: string;
   id: string;

@@ -22,7 +22,7 @@ type EventNameMap = {
 
 export type EventTypeMap = {
   [key in keyof EventNameMap]: (
-    e: GlobalEventHandlersEventMap[EventNameMap[key]],
+    e: HTMLElementEventMap[EventNameMap[key]],
   ) => void;
 };
 export const isEventHandlerName = (
@@ -51,24 +51,3 @@ export const isEventHandlerName = (
   ];
   return eventHandlerNames.includes(name as keyof EventNameMap);
 };
-export interface EventHandlers {
-  onClick: (event: MouseEvent) => void;
-  onDoubleClick: (event: MouseEvent) => void;
-  onMouseDown: (event: MouseEvent) => void;
-  onMouseUp: (event: MouseEvent) => void;
-  onMouseMove: (event: MouseEvent) => void;
-  onMouseEnter: (event: MouseEvent) => void;
-  onMouseLeave: (event: MouseEvent) => void;
-  onChange: (event: Event) => void;
-  onInput: (event: Event) => void;
-  onSubmit: (event: Event) => void;
-  onFocus: (event: FocusEvent) => void;
-  onBlur: (event: FocusEvent) => void;
-  onKeyDown: (event: KeyboardEvent) => void;
-  onKeyUp: (event: KeyboardEvent) => void;
-  onKeyPress: (event: KeyboardEvent) => void;
-  onResize: (event: UIEvent) => void;
-  onScroll: (event: UIEvent) => void;
-  onWheel: (event: WheelEvent) => void;
-  onContextMenu: (event: MouseEvent) => void;
-}

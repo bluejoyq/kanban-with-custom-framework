@@ -1,4 +1,5 @@
 import { Div, Input, Button, Span } from "../lib/Element";
+import { IssueModel } from "../models/Issue";
 /**
  * @typedef {import("../Model").IssueModel} IssueModel
  */
@@ -14,7 +15,15 @@ export const IssueForm = () => {
    * @param {function(string, string):void} param.onSubmit
    * @return {HTMLElement}
    */
-  return ({ issue, onClose, onSubmit }) => {
+  return ({
+    issue,
+    onClose,
+    onSubmit,
+  }: {
+    issue: IssueModel | null;
+    onClose: () => void;
+    onSubmit: (title: string, authorId: string) => void;
+  }) => {
     let currentTitle = issue?.title ?? "";
     let currentAuthorId = issue?.authorId ?? "";
     const handleSubmit = () => {
@@ -35,8 +44,10 @@ export const IssueForm = () => {
             Input({
               placeholder: "이슈 제목을 입력해주세요",
               value: currentTitle,
-              onchange: (e) => {
-                currentTitle = e.target.value;
+              onChange: (e) => {
+                const target = e.target as HTMLInputElement;
+                if (target == null) return;
+                currentTitle = target.value;
               },
             }),
           ],
@@ -49,8 +60,10 @@ export const IssueForm = () => {
             Input({
               placeholder: "담당자 id를 입력해주세요",
               value: currentAuthorId,
-              onchange: (e) => {
-                currentAuthorId = e.target.value;
+              onChange: (e) => {
+                const target = e.target as HTMLInputElement;
+                if (target == null) return;
+                currentAuthorId = target.value;
               },
             }),
           ],
@@ -59,11 +72,11 @@ export const IssueForm = () => {
           children: [
             Button({
               children: ["취소"],
-              onclick: onClose,
+              onClick: onClose,
             }),
             Button({
               children: ["확인"],
-              onclick: handleSubmit,
+              onClick: handleSubmit,
             }),
           ],
         }),

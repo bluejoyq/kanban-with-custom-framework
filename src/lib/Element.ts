@@ -1,22 +1,23 @@
 import { EventTypeMap, isEventHandlerName } from "./Event";
 
-interface ElementProps extends Partial<EventTypeMap> {
+type ElementProps<T extends HTMLElement = HTMLElement> = Partial<
+  Omit<T, "children">
+> & {
   tagName: string;
   children?: Array<string | number | HTMLElement>;
   class?: string;
   key?: string | number;
-}
-
-interface TagProps extends Omit<ElementProps, "tagName"> {}
+} & Partial<EventTypeMap>;
+type TagProps<T extends HTMLElement> = Omit<ElementProps<T>, "tagName">;
 
 /**
  * @description create element
  */
-const Element = ({
+const Element = <T extends HTMLElement = HTMLElement>({
   tagName,
   children,
   ...props
-}: ElementProps): HTMLElement => {
+}: ElementProps<T>): T => {
   const $el = document.createElement(tagName);
   (children ?? []).forEach((child) => {
     if (typeof child === "string") {
@@ -36,26 +37,35 @@ const Element = ({
     }
     $el.setAttribute(key, props[key]);
   });
-  return $el;
+  return $el as T;
 };
 
 /**
  * @description create div element
  */
-export const Div = ({ children = [], ...props }: TagProps): HTMLDivElement =>
-  Element({ ...props, tagName: "div", children }) as HTMLDivElement;
+export const Div = ({
+  children = [],
+  ...props
+}: TagProps<HTMLDivElement>): HTMLDivElement =>
+  Element({ ...props, tagName: "div", children });
 
 /**
  * @description create h1 element
  */
-export const H1 = ({ children = [], ...props }: TagProps): HTMLHeadingElement =>
-  Element({ ...props, tagName: "h1", children }) as HTMLHeadingElement;
+export const H1 = ({
+  children = [],
+  ...props
+}: TagProps<HTMLHeadingElement>): HTMLHeadingElement =>
+  Element({ ...props, tagName: "h1", children });
 
 /**
  * @description create h2 element
  */
-export const H2 = ({ children = [], ...props }: TagProps): HTMLHeadingElement =>
-  Element({ ...props, tagName: "h2", children }) as HTMLHeadingElement;
+export const H2 = ({
+  children = [],
+  ...props
+}: TagProps<HTMLHeadingElement>): HTMLHeadingElement =>
+  Element({ ...props, tagName: "h2", children });
 
 /**
  * @description create button element
@@ -63,14 +73,17 @@ export const H2 = ({ children = [], ...props }: TagProps): HTMLHeadingElement =>
 export const Button = ({
   children = [],
   ...props
-}: TagProps): HTMLButtonElement =>
-  Element({ ...props, tagName: "button", children }) as HTMLButtonElement;
+}: TagProps<HTMLButtonElement>): HTMLButtonElement =>
+  Element({ ...props, tagName: "button", children });
 
 /**
  * @description create span element
  */
-export const Span = ({ children = [], ...props }: TagProps): HTMLSpanElement =>
-  Element({ ...props, tagName: "span", children }) as HTMLSpanElement;
+export const Span = ({
+  children = [],
+  ...props
+}: TagProps<HTMLSpanElement>): HTMLSpanElement =>
+  Element({ ...props, tagName: "span", children });
 
 /**
  * @description create input element
@@ -78,5 +91,5 @@ export const Span = ({ children = [], ...props }: TagProps): HTMLSpanElement =>
 export const Input = ({
   children = [],
   ...props
-}: TagProps): HTMLInputElement =>
-  Element({ ...props, tagName: "input", children }) as HTMLInputElement;
+}: TagProps<HTMLInputElement>): HTMLInputElement =>
+  Element({ ...props, tagName: "input", children });
