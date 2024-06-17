@@ -1,7 +1,10 @@
-interface ElementProps {
+import { EventTypeMap, isEventHandlerName } from "./Event";
+
+interface ElementProps extends Partial<EventTypeMap> {
   tagName: string;
   children?: Array<string | number | HTMLElement>;
-  [key: string]: any;
+  class?: string;
+  key?: string | number;
 }
 
 interface TagProps extends Omit<ElementProps, "tagName"> {}
@@ -27,7 +30,7 @@ const Element = ({
     }
   });
   Object.keys(props).forEach((key) => {
-    if (key.startsWith("on")) {
+    if (isEventHandlerName(key)) {
       $el.addEventListener(key.substring(2).toLowerCase(), props[key]);
       return;
     }

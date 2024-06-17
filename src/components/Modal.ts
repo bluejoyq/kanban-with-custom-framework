@@ -17,7 +17,7 @@ export const Modal = () => {
         Div({
           children: [...children],
           class: "modal-container",
-          onClick: (e: Event) => {
+          onClick: (e) => {
             e.stopPropagation();
           },
         }),
